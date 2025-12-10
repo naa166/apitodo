@@ -1,31 +1,47 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:padding="16dp"
-    tools:context=".MainActivity" >
+    android:background="#F4F4FB"
+    tools:context=".MainActivity">
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Daftar Tugas"
+        android:textSize="24sp"
+        android:textStyle="bold"
+        android:textColor="#333333"
+        android:layout_marginBottom="8dp" />
 
     <EditText
         android:id="@+id/inputTodo"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:ems="10"
         android:layout_marginTop="5dp"
-        android:inputType="textPersonName"
-        android:hint="Masukan Tugas..." />
+        android:background="@android:color/white"
+        android:padding="10dp"
+        android:elevation="2dp"
+        android:hint="Masukan Tugas..."
+        android:inputType="text"
+        android:drawablePadding="8dp" />
 
     <Button
         android:id="@+id/btnAdd"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Tambah Tugas" />
+        android:layout_marginTop="8dp"
+        android:text="Tambah Tugas"
+        android:backgroundTint="@color/purple_500"
+        android:textColor="@android:color/white" />
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rvTodo"
-        android:layout_marginTop="10dp"
         android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+        android:layout_height="0dp"
+        android:layout_marginTop="10dp"
+        android:layout_weight="1" />
 </LinearLayout>
