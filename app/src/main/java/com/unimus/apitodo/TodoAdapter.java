@@ -2,10 +2,10 @@ package com.unimus.apitodo;
 
 import android.annotation.SuppressLint;
 import android.app.AlertDialog;
-import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -22,24 +22,25 @@ import retrofit2.Response;
 public class TodoAdapter extends RecyclerView.Adapter<TodoAdapter.ViewHolder> {
 
     List<Todo> list;
-    ImageView btnDelete;
 
     public TodoAdapter(List<Todo> list) {
         this.list = list;
     }
 
+    @NonNull
     @Override
-    public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+    public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View v = LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.item_todo, parent, false);
         return new ViewHolder(v);
     }
 
-
+    @SuppressLint("RecyclerView")
     @Override
-    public void onBindViewHolder(ViewHolder holder, @SuppressLint("RecyclerView") int position) {
+    public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         holder.title.setText(list.get(position).getTitle());
 
+        // EDIT
         holder.itemView.setOnClickListener(v -> {
             AlertDialog.Builder dialog = new AlertDialog.Builder(v.getContext());
             dialog.setTitle("Edit Tugas");
@@ -68,24 +69,44 @@ public class TodoAdapter extends RecyclerView.Adapter<TodoAdapter.ViewHolder> {
             dialog.show();
         });
 
-
+        // HAPUS dengan bubble modern
         holder.btnDelete.setOnClickListener(v -> {
-            ApiClient.getService().deleteTodo(list.get(position).getId())
-                    .enqueue(new Callback<BasicResponse>() {
-                        @Override
-                        public void onResponse(Call<BasicResponse> call, Response<BasicResponse> response) {
-                            list.remove(position);
-                            notifyItemRemoved(position);
-                            notifyItemRangeChanged(position, list.size());
-                        }
+            View dialogView = LayoutInflater.from(v.getContext())
+                    .inflate(R.layout.dialog_confirm_delete, null, false);
 
-                        @Override
-                        public void onFailure(Call<BasicResponse> call, Throwable t) {
+            TextView tvMessage = dialogView.findViewById(R.id.tvMessage);
+            Button btnCancel = dialogView.findViewById(R.id.btnCancel);
+            Button btnOk = dialogView.findViewById(R.id.btnOk);
 
-                        }
-                    });
+            tvMessage.setText("Tugas \"" + list.get(position).getTitle() + "\" akan dihapus.");
+
+            AlertDialog dialog = new AlertDialog.Builder(v.getContext())
+                    .setView(dialogView)
+                    .setCancelable(true)
+                    .create();
+
+            btnCancel.setOnClickListener(view -> dialog.dismiss());
+
+            btnOk.setOnClickListener(view -> {
+                ApiClient.getService().deleteTodo(list.get(position).getId())
+                        .enqueue(new Callback<BasicResponse>() {
+                            @Override
+                            public void onResponse(Call<BasicResponse> call, Response<BasicResponse> response) {
+                                list.remove(position);
+                                notifyItemRemoved(position);
+                                notifyItemRangeChanged(position, list.size());
+                                dialog.dismiss();
+                            }
+
+                            @Override
+                            public void onFailure(Call<BasicResponse> call, Throwable t) {
+                                dialog.dismiss();
+                            }
+                        });
+            });
+
+            dialog.show();
         });
-
     }
 
     @Override
@@ -104,4 +125,3 @@ public class TodoAdapter extends RecyclerView.Adapter<TodoAdapter.ViewHolder> {
         }
     }
 }
-

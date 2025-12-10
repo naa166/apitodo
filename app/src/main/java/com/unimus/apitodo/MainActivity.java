@@ -5,8 +5,10 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Toast;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -36,6 +38,13 @@ public class MainActivity extends AppCompatActivity {
 
     private void addTodo() {
         String title = inputTodo.getText().toString();
+
+        // validasi sederhana, tidak mengubah alur asli
+        if (TextUtils.isEmpty(title.trim())) {
+            Toast.makeText(this, "Tulis dulu tugasnya", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
         ApiClient.getService().addTodo(title).enqueue(new Callback<BasicResponse>() {
             @Override
             public void onResponse(Call<BasicResponse> call, Response<BasicResponse> response) {
@@ -54,7 +63,8 @@ public class MainActivity extends AppCompatActivity {
         ApiClient.getService().getTodo().enqueue(new Callback<TodoResponse>() {
             @Override
             public void onResponse(Call<TodoResponse> call, Response<TodoResponse> r) {
-                if (r.body().status){
+                // tambahkan cek null supaya aman, tapi struktur if tetap sama
+                if (r.body() != null && r.body().status){
                     adapter = new TodoAdapter(r.body().getData());
                     rvTodo.setAdapter(adapter);
 
@@ -67,6 +77,4 @@ public class MainActivity extends AppCompatActivity {
             }
         });
     }
-
-
 }
